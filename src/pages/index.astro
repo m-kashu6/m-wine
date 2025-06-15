@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getBlogs } from "../libs/microcms";
+
+// MicroCMSの呼び出し
+const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
+---
+
+<link rel="stylesheet" href="/styles/common.css" />
+
+<Layout title="m-wine-blog">
+
+	<header class="header">
+		<h1 class="header__name">
+			<a href="dummy" class="header__name-link">MAKI KASHU</a>
+		</h1>
+		<nav class="header__nav">
+
+			<ul class="nav-list">
+				<li class="nav-list__item">
+					<a href="dummy" class="nav-list__link">About</a>
+				</li>
+				<li class="nav-list__item">
+					<a href="dummy" class="nav-list__link">Contact</a>
+				</li>
+			</ul>
+			<!-- nav-list -->
+
+		</nav>
+	</header>
+	<!-- header -->
+	 
+	<main class="main">
+
+		<div class="kv">
+			<div class="kv__img">
+				<img src="/assets/kv_img.jpg" alt="" width="1260" height="550">
+			</div>
+		</div>
+		<!-- kv -->
+
+		<section class="section1">
+
+			<h2 class="ttl1">WINE RECORD</h2>
+			<!-- ttl1 -->
+
+			<ul class="wine-list">
+			{response.contents.map((blog: any) => (
+			<li class="wine-list__item">
+				<a class="wine-list__link" href={blog.id}>
+					<div class="wine-img">
+						{blog.image?.url && (
+                    	<img src={blog.image.url} alt={blog.title} />
+                  		)}
+					</div>
+					<div class="wine__list-content">
+						<span class="wine-list__ttl">{blog.title}</span>
+						<div class="wine-list__txt" set:html={blog.title2}></div>
+					</div>
+				</a>
+			</li>
+			))
+			}
+		</ul>
+		<!-- wine-list -->
+
+		</section>
+		<!-- section1 -->
+
+	</main>
+	<!-- main -->
+</Layout>
+
+<script type="module" src="/scripts/common.js" defer></script>

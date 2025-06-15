@@ -1,0 +1,74 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getBlogsDetail, getBlogs } from "../libs/microcms";
+
+export async function getStaticPaths() {
+  const response = await getBlogs({ fields: ["id","description"] });
+  return response.contents.map((blog: any) => ({
+    params: {
+      blogId: blog.id,
+    },
+  }));
+}
+
+const { blogId } = Astro.params;
+const blog = await getBlogsDetail(blogId as string);
+---
+
+<link rel="stylesheet" href="/styles/common.css" />
+
+<Layout title="Blog Data">
+
+    <header class="header">
+		<h1 class="header__name">
+			<a href="./" class="header__name-link">MAKI KASHU</a>
+		</h1>
+		<nav class="header__nav">
+
+			<ul class="nav-list">
+				<li class="nav-list__item">
+					<a href="dummy" class="nav-list__link">About</a>
+				</li>
+				<li class="nav-list__item">
+					<a href="dummy" class="nav-list__link">Contact</a>
+				</li>
+			</ul>
+			<!-- nav-list -->
+
+		</nav>
+	</header>
+	<!-- header -->
+
+  <main class="main main--2">
+
+    <section class="section-content1">
+        <div class="section-content1__inner">
+
+            <h2 class="ttl2 ttl2--2">{blog.title}</h2>
+            <!-- ttl2 -->
+
+            <!-- <p class="section-content1__date">公開日時:{new Date(blog.publishedAt).toLocaleString()}</p> -->
+        </div>
+
+        <div class="wine-img wine-img--2">
+            {blog.image?.url && (
+            <img src={blog.image.url} alt={blog.title} />
+            )}
+        </div>
+
+        <div class="section-content1__wrap">
+            <div class="section-content1__desc" set:html={blog.content} />
+            <span class="section-content1__desc-img">
+                <img src="/assets/img_wine.png" alt="" width="170" height="170">
+            </span>
+        </div>
+        <div class="section-content1__desc section-content1__desc--2" set:html={blog.description}></div>
+    </section>
+    <!-- section-content1 -->
+
+  </main>
+  <!-- main -->
+
+</Layout>
+
+<script type="module" src="/scripts/common.js" defer></script>
