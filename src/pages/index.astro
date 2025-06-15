@@ -29,8 +29,6 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 		</nav>
 	</header>
 	<!-- header -->
-	 
-	<main class="main">
 
 		<div class="kv">
 			<div class="kv__img">
@@ -38,6 +36,8 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 			</div>
 		</div>
 		<!-- kv -->
+	 
+	<main class="main">
 
 		<section class="section1">
 
@@ -57,6 +57,7 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 						<span class="wine-list__ttl">{blog.title}</span>
 						<div class="wine-list__txt" set:html={blog.title2}></div>
 					</div>
+				<span class="wine-list__detail">See more >></span>
 				</a>
 			</li>
 			))
@@ -67,8 +68,58 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 		</section>
 		<!-- section1 -->
 
+		<section class="section2">
+
+			<h2 class="ttl1">ABOUT ME</h2>
+			<!-- ttl1 -->
+
+			<div class="about">
+				<ul class="about__content">
+					<li class="about__img">
+						<img src="/assets/img_profile.png" alt="" width="100" height="200">
+					</li>
+					<li class="about__desc-box">
+						<p class="about__desc">MAKI KASHU</p>
+						<p class="about__desc">29歳でワインに興味を持ち始め、カルディでお手軽なデイリーワインを買ったりお店でワインを飲んだり...</p>
+						<p class="about__desc">趣味は音楽/バスケ観戦/お笑い/ワイン/クラフトビール/ごはんや巡り!</p>
+						<p class="about__desc">現在は資格取得に向けて緩く勉強中です。飲んだお酒を忘れないようにブログを作成しました。</p>
+					</li>
+				</ul>
+			</div>
+			<!-- about -->
+
+		</section>
+		<!-- section2 -->
+
+		<section class="section3">
+
+			<h2 class="ttl1">CONTACT</h2>
+			<!-- ttl1 -->
+
+			<div class="contact">
+				<ul class="contact__content">
+					<li class="contact__img">
+						<img src="/assets/img_contact.png" alt="" width="100" height="200">
+					</li>
+					<li class="contact__desc-box">
+						<span class="contact__ttl">EMAIL</span>
+						<a href="mailto:2018casmakikashu@gmail.com" class="contact__link">2018casmakikashu@gmail.com</a
+					</li>
+				</ul>
+			</div>
+			<!-- contact -->
+
+		</section>
+		<!-- section3 -->
+
 	</main>
 	<!-- main -->
+
+	<footer class="footer">
+		<p class="footer__copyright">＠2025 MAKI KASHU</p>
+	</footer>
+	<!-- footer -->
+
 </Layout>
 
 <script type="module" src="/scripts/common.js" defer></script>

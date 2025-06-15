@@ -146,13 +146,17 @@
 *   header
 --------------------------------------------- */
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1em 20px;
-  max-width: 1040px;
+  /* max-width: 1040px; */
   width: 100%;
   margin-inline: auto;
+  z-index: 999;
 }
 
 .header__name {
@@ -174,6 +178,7 @@
 *   nav-list
 --------------------------------------------- */
 .kv {
+  padding-top: 68px;
   width: 100%;
 }
 
@@ -272,6 +277,12 @@
   font-weight: bold;
 }
 
+.section2, .section3 {
+  max-width: 1040px;
+  padding-inline: 20px;
+  margin-inline: auto;
+}
+
 /* ---------------------------------------------
 *   ttl
 --------------------------------------------- */
@@ -282,6 +293,7 @@
     text-align: center;
     font-weight: bold;
     letter-spacing: .08em;
+    margin-top: 80px;
   }
 
   .ttl2 {
@@ -298,10 +310,15 @@
   .wine-list {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     justify-content: space-between;
     gap: 20px;
     margin-top: 50px;
+  }
+
+  @media (max-width: 750px) {
+    .wine-list {
+      column-gap: 0;
+    }
   }
 
   .wine-list__item {
@@ -311,12 +328,19 @@
     padding: 1em;
   }
 
+    @media (max-width: 750px) {
+    .wine-list__item {
+      width: 100%;
+    }
+  }
+
   .wine-list__link {
     display: flex;
     column-gap: 20px;
     width: 100%;
     font-weight: bold;
     transition: opacity .3s;
+    position: relative;
   }
 
   .wine-list__link:hover {
@@ -343,6 +367,21 @@
     color: #000;
   }
 
+  .wine-list__detail {
+    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: var(--red1);
+    font-size: .9rem;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom .3s;
+  }
+
+  .wine-list__link:hover .wine-list__detail {
+    border-bottom: 1px solid var(--red1);
+  }
+
 /* ---------------------------------------------
 *   wine-img
 --------------------------------------------- */
@@ -360,3 +399,123 @@
     margin: 50px auto 0;
     height: auto;
   }
+
+/* ---------------------------------------------
+*   footer
+--------------------------------------------- */
+.footer {
+  margin-top: 50px;
+}
+
+.footer__copyright {
+  font-size: .9rem;
+  color: var(--red1);
+  text-align: center;
+  font-weight: bold;
+}
+
+/* ---------------------------------------------
+*   about
+--------------------------------------------- */
+.about__content {
+  display: flex;
+  justify-content: center;
+  column-gap: 20px;
+  margin-top: 30px;
+}
+
+@media (max-width: 750px) {
+  .about__content {
+    flex-direction: column;
+  }
+}
+
+.about__img {
+  flex-shrink: 0;
+}
+
+@media (max-width: 750px) {
+  .about__img {
+    flex-shrink: 1;
+  }
+}
+
+.about__img img {
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .about__img img {
+    height: auto;
+  }
+}
+
+.about__desc {
+  color: var(--red1);
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: .15em;
+}
+
+.about__desc:first-child {
+  margin-bottom: 15px;
+}
+
+/* ---------------------------------------------
+*   contact
+--------------------------------------------- */
+.contact__content {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 20px;
+  margin-top: 30px;
+}
+
+@media (max-width: 750px) {
+  .contact__content {
+    flex-direction: column;
+  }
+}
+
+.contact__ttl {
+  display: block;
+  color: var(--red1);
+  font-weight: bold;
+}
+
+.contact__img {
+  flex-shrink: 0;
+}
+
+@media (max-width: 750px) {
+  .contact__img {
+    flex-shrink: 1;
+  }
+}
+
+.contact__img img {
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .contact__img img {
+    height: auto;
+  }
+}
+
+.contact__link {
+  color: var(--red1);
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: .15em;
+  transition: border-bottom .3s;
+  border-bottom: 1px solid transparent;
+}
+
+.contact__link:hover {
+  border-bottom: 1px solid var(--red1);
+}
