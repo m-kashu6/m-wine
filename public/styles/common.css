@@ -328,6 +328,10 @@
 }
 
 @media (max-width: 750px) {
+  .section-content1__desc {
+      width: 100%;
+  }
+
   .section-content1__desc p {
       font-size: .9rem;
     }
