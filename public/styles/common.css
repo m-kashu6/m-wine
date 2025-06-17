@@ -348,7 +348,6 @@
       width: calc(170 / 750 * 100vw);
       min-width: 100px;
       flex-shrink: 0;
-      margin-inline: auto 0;
     }
 
     .section-content1__desc-img img {
