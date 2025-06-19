@@ -132,6 +132,7 @@
   }
 
   .main {
+    position: relative;
     max-width: 1000px;
     width: 100%;
     margin: auto;
@@ -441,6 +442,12 @@
     width: 100%;
   }
 
+  @media (max-width: 750px) {
+    .wine__list-content {
+      max-width: none;
+    }
+  }
+
   .wine-list__ttl {
     display: block;
     border-bottom: 1px solid var(--red1);
@@ -568,7 +575,8 @@
 
 @media (max-width: 768px) {
   .about__img img {
-    height: auto;
+    object-fit: contain;
+    aspect-ratio: 1/1;
   }
 }
 
@@ -636,7 +644,8 @@
 
 @media (max-width: 768px) {
   .contact__img img {
-    height: auto;
+    object-fit: contain;
+    aspect-ratio: 1/1;
   }
 }
 
@@ -657,4 +666,43 @@
 
 .contact__link:hover {
   border-bottom: 1px solid var(--red1);
+}
+
+/* ---------------------------------------------
+*   hr
+--------------------------------------------- */
+#about {
+  margin-top: -50px;
+  padding-top: 50px;
+}
+
+#contact {
+  margin-top: -50px;
+  padding-top: 50px;
+}
+
+/* ---------------------------------------------
+*   pagetop
+--------------------------------------------- */
+.pagetop {
+  cursor: pointer;
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  transition: .3s;
+  color: var(--red1);
+  background: #fff;
+  font-weight: bold;
+  
+/*   デフォルトは非表示 */
+  opacity: 0;
+}
+.pagetop:hover {
+    box-shadow: 0 0 10px var(--red1);
 }

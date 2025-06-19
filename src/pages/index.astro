@@ -12,16 +12,16 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 
 	<header class="header">
 		<h1 class="header__name">
-			<a href="dummy" class="header__name-link">MAKI KASHU</a>
+			<a href="/" class="header__name-link">MAKI KASHU</a>
 		</h1>
 		<nav class="header__nav">
 
 			<ul class="nav-list">
 				<li class="nav-list__item">
-					<a href="dummy" class="nav-list__link">About</a>
+					<a href="#about" class="nav-list__link">About</a>
 				</li>
 				<li class="nav-list__item">
-					<a href="dummy" class="nav-list__link">Contact</a>
+					<a href="#contact" class="nav-list__link">Contact</a>
 				</li>
 			</ul>
 			<!-- nav-list -->
@@ -30,12 +30,12 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 	</header>
 	<!-- header -->
 
-		<div class="kv">
-			<div class="kv__img">
-				<img src="/assets/kv_img.jpg" alt="" width="1260" height="550">
-			</div>
+	<div class="kv">
+		<div class="kv__img">
+			<img src="/assets/kv_img.jpg" alt="" width="1260" height="550">
 		</div>
-		<!-- kv -->
+	</div>
+	<!-- kv -->
 	 
 	<main class="main">
 
@@ -68,6 +68,8 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 		</section>
 		<!-- section1 -->
 
+		<hr id="about">
+
 		<section class="section2">
 
 			<h2 class="ttl1">ABOUT ME</h2>
@@ -90,6 +92,8 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 
 		</section>
 		<!-- section2 -->
+
+		<hr id="contact">
 
 		<section class="section3">
 
@@ -117,6 +121,10 @@ const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
 
 	<footer class="footer">
 		<p class="footer__copyright">＠2025 MAKI KASHU</p>
+
+		<button class="pagetop" aria-label="ページトップに戻る" title="ページトップに戻る">TOP</button>
+		<!-- totop -->
+
 	</footer>
 	<!-- footer -->
 
