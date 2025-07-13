@@ -3,7 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import { getBlogs } from "../libs/microcms";
 
 // MicroCMSの呼び出し
-const response = await getBlogs({ fields: ["id", "title", "image","title2"] });
+const response = await getBlogs({
+  fields: ["id", "title", "image", "title2"],
+  limit: 100 // 表示したい件数を指定（最大100）
+});
+
+
 ---
 
 <link rel="stylesheet" href="/styles/common.css" />
