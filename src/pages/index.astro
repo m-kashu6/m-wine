@@ -9,9 +9,45 @@ const blogs = response.contents;
 // Only show filter buttons for types that actually appear in the data.
 const present = new Set(blogs.map((b) => wineTypeOf(b)).filter(Boolean));
 const typeFilters = WINE_TYPES.filter((t) => present.has(t.key));
+
+const site = Astro.site?.toString().replace(/\/$/, "") ?? "";
+const pageTitle = "M's Wine Record｜ワインの記録・テイスティングノート";
+const pageDesc =
+  "赤・白・オレンジ・スパークリング — MAKI KASHU が飲んだワインを、産地・品種・評価とともに記録する大阪発のワインジャーナル。";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${site}/#website`,
+      url: `${site}/`,
+      name: "M's Wine Record",
+      description: pageDesc,
+      inLanguage: "ja",
+      publisher: { "@id": `${site}/#person` },
+    },
+    {
+      "@type": "Person",
+      "@id": `${site}/#person`,
+      name: "Maki Kashu",
+      url: `${site}/`,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Osaka",
+        addressCountry: "JP",
+      },
+    },
+  ],
+};
 ---
 
-<Layout>
+<Layout title={pageTitle} description={pageDesc}>
+  <script
+    type="application/ld+json"
+    slot="head"
+    set:html={JSON.stringify(jsonLd)}
+  />
   <!-- ============ COVER ============ -->
   <section class="relative flex min-h-[88vh] flex-col">
     <!-- Cover image (parallax) -->

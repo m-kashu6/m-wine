@@ -40,9 +40,47 @@ const meta = [
 ].filter((x): x is NonNullable<typeof x> => x !== null);
 
 const hasMeta = meta.length > 0;
+
+// --- SEO / AIO ---
+const site = Astro.site?.toString().replace(/\/$/, "") ?? "";
+const plain = (html?: string) =>
+  (html ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+const rawDesc = plain(blog.title2) || plain(blog.content) || plain(blog.description);
+const description =
+  (rawDesc ? rawDesc.slice(0, 116) + (rawDesc.length > 116 ? "…" : "") : "") ||
+  `${blog.title} のテイスティングノート。`;
+const ogImage = blog.image?.url ? `${blog.image.url}?w=1200&fit=clip` : undefined;
+const pageUrl = `${site}/${blogId}`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: blog.title,
+  description,
+  ...(blog.image?.url ? { image: blog.image.url } : {}),
+  datePublished: blog.publishedAt ?? blog.createdAt,
+  dateModified: blog.updatedAt ?? blog.publishedAt ?? blog.createdAt,
+  inLanguage: "ja",
+  mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+  author: { "@type": "Person", name: "Maki Kashu", url: `${site}/` },
+  publisher: { "@type": "Person", name: "Maki Kashu", url: `${site}/` },
+  ...(blog.region || blog.grape
+    ? { about: [blog.region, blog.grape].filter(Boolean).join(", ") }
+    : {}),
+};
 ---
 
-<Layout title={`${blog.title} — M's Wine Record`}>
+<Layout
+  title={`${blog.title} — M's Wine Record`}
+  description={description}
+  image={ogImage}
+  type="article"
+>
+  <script
+    type="application/ld+json"
+    slot="head"
+    set:html={JSON.stringify(jsonLd)}
+  />
   <article class="mx-auto max-w-6xl px-5 pt-8 md:px-10 md:pt-12">
     <!-- Back -->
     <a
