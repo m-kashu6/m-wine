@@ -13,7 +13,7 @@ const typeFilters = WINE_TYPES.filter((t) => present.has(t.key));
 const site = Astro.site?.toString().replace(/\/$/, "") ?? "";
 const pageTitle = "M's Wine Record｜ワインの記録・テイスティングノート";
 const pageDesc =
-  "赤・白・オレンジ・スパークリング — MAKI KASHU が飲んだワインを、産地・品種・評価とともに記録する大阪発のワインジャーナル。";
+  "赤・白・オレンジ・スパークリング — Maki K. が飲んだワインを、産地・品種・評価とともに記録する大阪発のワインジャーナル。";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -30,7 +30,7 @@ const jsonLd = {
     {
       "@type": "Person",
       "@id": `${site}/#person`,
-      name: "Maki Kashu",
+      name: "Maki K.",
       url: `${site}/`,
       address: {
         "@type": "PostalAddress",
@@ -168,14 +168,14 @@ const jsonLd = {
         <figure class="reveal-img mx-auto w-48 md:mx-0 md:w-full">
           <img
             src="/assets/img_profile.png"
-            alt="MAKI KASHU"
+            alt="Maki K."
             width="480"
             height="600"
             class="h-auto w-full grayscale"
           />
           <figcaption class="caption mt-3 flex items-center gap-3">
             <span class="h-px w-6 bg-ink"></span>
-            Maki Kashu — Osaka
+            Maki K. — Osaka
           </figcaption>
         </figure>
 
@@ -227,10 +227,11 @@ const jsonLd = {
       </p>
       <a
         href="mailto:2018casmakikashu@gmail.com"
-        class="font-display group inline-flex items-baseline gap-2 text-2xl italic text-ink decoration-1 underline-offset-[6px] transition-all hover:underline md:text-4xl"
+        class="font-label group mt-2 inline-flex items-center gap-3 border border-ink px-8 py-4 text-xs uppercase tracking-[0.24em] text-ink transition-colors hover:bg-ink hover:text-paper"
+        aria-label="メールで問い合わせる"
       >
-        2018casmakikashu@gmail.com
-        <span class="text-base not-italic transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
+        Email Me
+        <span class="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
       </a>
     </div>
   </section>

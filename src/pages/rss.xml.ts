@@ -11,7 +11,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: "M's Wine Record",
     description:
-      "MAKI KASHU が飲んだワインの記録。産地・品種・評価とともに綴る、大阪発のワインジャーナル。",
+      "Maki K. が飲んだワインの記録。産地・品種・評価とともに綴る、大阪発のワインジャーナル。",
     site: context.site ?? "https://m-wine.netlify.app",
     items: res.contents.map((blog) => ({
       title: blog.title,

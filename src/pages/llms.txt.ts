@@ -21,10 +21,10 @@ export async function GET(context: APIContext) {
 
   const body = `# M's Wine Record
 
-> 大阪在住の Maki Kashu が飲んだワインを記録するワインジャーナル。赤(Red)・白(White)・オレンジ(Orange)・ロゼ(Rosé)・スパークリング(Sparkling)を、産地・品種・5段階評価とともに紹介しています。
+> 大阪在住の Maki K. が飲んだワインを記録するワインジャーナル。赤(Red)・白(White)・オレンジ(Orange)・ロゼ(Rosé)・スパークリング(Sparkling)を、産地・品種・5段階評価とともに紹介しています。
 
 ## About
-- 著者: Maki Kashu（大阪）
+- 著者: Maki K.（大阪）
 - 内容: 個人のワインテイスティングノート / 飲んだワインの記録
 - 言語: 日本語
 - サイト: ${site}/

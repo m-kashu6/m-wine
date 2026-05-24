@@ -62,8 +62,8 @@ const jsonLd = {
   dateModified: blog.updatedAt ?? blog.publishedAt ?? blog.createdAt,
   inLanguage: "ja",
   mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
-  author: { "@type": "Person", name: "Maki Kashu", url: `${site}/` },
-  publisher: { "@type": "Person", name: "Maki Kashu", url: `${site}/` },
+  author: { "@type": "Person", name: "Maki K.", url: `${site}/` },
+  publisher: { "@type": "Person", name: "Maki K.", url: `${site}/` },
   ...(blog.region || blog.grape
     ? { about: [blog.region, blog.grape].filter(Boolean).join(", ") }
     : {}),
