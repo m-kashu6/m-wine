@@ -1,0 +1,62 @@
+---
+import type { WineType } from "../libs/microcms";
+import { wineTypeLabel } from "../libs/microcms";
+
+interface Props {
+  type?: WineType;
+  /** Filled colour chip (for at-a-glance overlay on cards) */
+  solid?: boolean;
+  class?: string;
+}
+
+const { type, solid = false, class: className = "" } = Astro.props;
+const label = wineTypeLabel(type);
+
+// Dot colour (outline variant).
+const dot: Record<WineType, string> = {
+  red: "bg-[#8e1b2e]",
+  white: "bg-[#d8c27a]",
+  orange: "bg-[#c8732f]",
+  rose: "bg-[#d68fa0]",
+  sparkling: "bg-[#b9a86a]",
+  other: "bg-ink-soft",
+};
+
+// Filled chip: background + readable text colour per type.
+const fill: Record<WineType, string> = {
+  red: "bg-[#8e1b2e] text-white",
+  white: "bg-[#d8c27a] text-ink",
+  orange: "bg-[#c8732f] text-white",
+  rose: "bg-[#d68fa0] text-ink",
+  sparkling: "bg-[#b9a86a] text-ink",
+  other: "bg-ink-soft text-white",
+};
+---
+
+{
+  type && solid && (
+    <span
+      class:list={[
+        "font-label inline-flex items-center rounded-sm px-2 py-1 text-[0.6rem] uppercase tracking-[0.2em] shadow-sm",
+        fill[type] ?? "bg-ink text-white",
+        className,
+      ]}
+    >
+      {label}
+    </span>
+  )
+}
+
+{
+  type && !solid && (
+    <span
+      class:list={[
+        "font-label inline-flex items-center gap-1.5 text-[0.62rem] uppercase tracking-[0.24em] text-ink",
+        className,
+      ]}
+    >
+      <span class:list={["h-1.5 w-1.5 rounded-full", dot[type] ?? "bg-accent"]} />
+      {label}
+    </span>
+  )
+}

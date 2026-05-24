@@ -1,0 +1,104 @@
+---
+// Fashion-magazine masthead: thin black hairline, Didone wordmark, sans nav.
+const links = [
+  { href: "/", label: "Index" },
+  { href: "/#about", label: "About" },
+  { href: "/#contact", label: "Contact" },
+];
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-ink bg-paper/95 backdrop-blur-md"
+>
+  <div
+    class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 md:px-10"
+  >
+    <a
+      href="/"
+      class="font-display whitespace-nowrap text-lg font-medium uppercase tracking-[0.04em] text-ink transition-opacity hover:opacity-60 sm:text-xl md:text-3xl"
+    >
+      M's Wine Record
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:block">
+      <ul class="flex items-center gap-10">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="font-label text-xs uppercase tracking-[0.28em] text-ink transition-opacity hover:opacity-50"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <!-- Mobile toggle -->
+    <button
+      id="nav-toggle"
+      class="relative z-50 flex h-10 w-10 items-center justify-center md:hidden"
+      aria-label="メニューを開く"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+    >
+      <span class="sr-only">メニュー</span>
+      <span
+        class="block h-px w-6 bg-ink transition-transform duration-300 before:absolute before:h-px before:w-6 before:-translate-y-2 before:bg-ink before:transition-transform before:duration-300 after:absolute after:h-px after:w-6 after:translate-y-2 after:bg-ink after:transition-transform after:duration-300"
+        data-bars></span>
+    </button>
+  </div>
+
+  <!-- Mobile drawer -->
+  <nav
+    id="mobile-nav"
+    class="grid grid-rows-[0fr] overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden"
+  >
+    <ul class="min-h-0 flex-col border-t border-ink bg-paper px-6 py-2">
+      {
+        links.map((link) => (
+          <li class="border-b border-line last:border-0">
+            <a
+              href={link.href}
+              data-nav-link
+              class="font-display block py-5 text-4xl text-ink transition-opacity hover:opacity-50"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById("nav-toggle");
+  const drawer = document.getElementById("mobile-nav");
+  const bars = toggle?.querySelector("[data-bars]");
+
+  const setOpen = (open: boolean) => {
+    if (!toggle || !drawer || !bars) return;
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "メニューを閉じる" : "メニューを開く");
+    drawer.classList.toggle("grid-rows-[1fr]", open);
+    drawer.classList.toggle("grid-rows-[0fr]", !open);
+    bars.classList.toggle("bg-transparent", open);
+    bars.classList.toggle("before:translate-y-0", open);
+    bars.classList.toggle("before:rotate-45", open);
+    bars.classList.toggle("after:translate-y-0", open);
+    bars.classList.toggle("after:-rotate-45", open);
+  };
+
+  toggle?.addEventListener("click", () => {
+    setOpen(toggle.getAttribute("aria-expanded") !== "true");
+  });
+
+  drawer?.querySelectorAll("[data-nav-link]").forEach((link) => {
+    link.addEventListener("click", () => setOpen(false));
+  });
+</script>

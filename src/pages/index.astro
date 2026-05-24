@@ -1,138 +1,288 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { getBlogs } from "../libs/microcms";
+import Layout from "../layouts/Layout.astro";
+import { getBlogs, wineTypeOf, WINE_TYPES } from "../libs/microcms";
+import WineCard from "../components/WineCard.astro";
 
-// MicroCMSの呼び出し
-const response = await getBlogs({
-  fields: ["id", "title", "image", "title2"],
-  limit: 100 // 表示したい件数を指定（最大100）
-});
+const response = await getBlogs({ limit: 100 });
+const blogs = response.contents;
 
-
+// Only show filter buttons for types that actually appear in the data.
+const present = new Set(blogs.map((b) => wineTypeOf(b)).filter(Boolean));
+const typeFilters = WINE_TYPES.filter((t) => present.has(t.key));
 ---
 
-<link rel="stylesheet" href="/styles/common.css" />
+<Layout>
+  <!-- ============ COVER ============ -->
+  <section class="relative flex min-h-[88vh] flex-col">
+    <!-- Cover image (parallax) -->
+    <div class="absolute inset-0 -z-10 overflow-hidden">
+      <img
+        src="/assets/kv_img.jpg"
+        alt=""
+        width="1260"
+        height="550"
+        data-pspeed="0.2"
+        class="absolute inset-x-0 top-[-12%] h-[124%] w-full object-cover will-change-transform"
+      />
+      <div class="absolute inset-0 bg-gradient-to-b from-ink/55 via-ink/20 to-ink/80"></div>
+    </div>
 
-<Layout title="m-wine-blog">
+    <!-- Masthead (parallax, fades on scroll) -->
+    <div class="px-5 pt-10 text-center md:px-10" data-pspeed="0.42" data-pfade="620">
+      <p class="reveal eyebrow text-paper" style="--i:0">No. 01 — Osaka Edition</p>
+      <h1
+        class="reveal-clip font-display mt-3 text-mega font-medium uppercase leading-[0.8] tracking-[0.02em] text-paper"
+        style="--i:1"
+      >
+        The Wine<br />Journal
+      </h1>
+    </div>
 
-	<header class="header">
-		<h1 class="header__name">
-			<a href="/" class="header__name-link">MAKI KASHU</a>
-		</h1>
-		<nav class="header__nav">
+    <!-- Cover lines -->
+    <div class="mt-auto flex flex-col gap-6 px-5 pb-12 md:flex-row md:items-end md:justify-between md:px-10">
+      <p class="reveal font-display max-w-md text-2xl font-light italic leading-snug text-paper md:text-3xl" style="--i:2">
+        飲んだ一本を、忘れないために。
+      </p>
+      <p class="reveal caption max-w-xs text-paper/90 md:text-right" style="--i:3">
+        A personal wine journal —<br />tasting notes, regions &amp; ratings.
+      </p>
+    </div>
+  </section>
 
-			<ul class="nav-list">
-				<li class="nav-list__item">
-					<a href="#about" class="nav-list__link">About</a>
-				</li>
-				<li class="nav-list__item">
-					<a href="#contact" class="nav-list__link">Contact</a>
-				</li>
-			</ul>
-			<!-- nav-list -->
+  <!-- ============ INDEX ============ -->
+  <section id="record" class="mx-auto max-w-7xl px-5 py-16 md:px-10 md:py-24">
+    <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-ink pb-5">
+      <h2 class="reveal-clip font-display text-display font-medium leading-none text-ink">
+        The Index
+      </h2>
+      <p class="caption">
+        <span data-count>{blogs.length}</span> / {blogs.length} Bottles
+      </p>
+    </div>
 
-		</nav>
-	</header>
-	<!-- header -->
+    <!-- Toolbar -->
+    <div
+      class="sticky top-[65px] z-30 -mx-5 mt-6 border-b border-line bg-paper/95 px-5 py-3 backdrop-blur-md md:mx-0 md:px-0"
+    >
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        {
+          typeFilters.length > 0 && (
+            <div class="flex flex-wrap gap-5" role="group" aria-label="タイプで絞り込み">
+              <button type="button" data-filter="all" class="filter-btn is-active">
+                All
+              </button>
+              {typeFilters.map((t) => (
+                <button type="button" data-filter={t.key} class="filter-btn">
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )
+        }
 
-	<div class="kv">
-		<div class="kv__img">
-			<img src="/assets/kv_img.jpg" alt="" width="1260" height="550">
-		</div>
-	</div>
-	<!-- kv -->
-	 
-	<main class="main">
+        <label class="relative md:ml-auto md:w-64">
+          <span class="sr-only">ワインを検索</span>
+          <input
+            type="search"
+            id="wine-search"
+            placeholder="Search — 名前・産地・品種"
+            autocomplete="off"
+            class="font-label w-full border-0 border-b border-line bg-transparent py-1.5 text-xs uppercase tracking-[0.18em] text-ink placeholder:text-ink-soft/70 focus:border-ink focus:outline-none"
+          />
+        </label>
+      </div>
+    </div>
 
-		<section class="section1">
+    <!-- Grid -->
+    <ul
+      id="wine-grid"
+      class="mt-12 grid grid-cols-2 gap-x-6 gap-y-14 md:grid-cols-3 md:gap-x-10 lg:grid-cols-4"
+    >
+      {blogs.map((blog, i) => <WineCard blog={blog} index={i} />)}
+    </ul>
 
-			<h2 class="ttl1">WINE RECORD</h2>
-			<!-- ttl1 -->
+    <p id="no-results" class="hidden py-24 text-center font-display text-2xl italic text-ink-soft">
+      No bottles found.
+    </p>
 
-			<ul class="wine-list">
-			{response.contents.map((blog: any) => (
-			<li class="wine-list__item">
-				<a class="wine-list__link" href={blog.id}>
-					<div class="wine-img">
-						{blog.image?.url && (
-                    	<img src={blog.image.url} alt={blog.title} />
-                  		)}
-					</div>
-					<div class="wine__list-content">
-						<span class="wine-list__ttl">{blog.title}</span>
-						<div class="wine-list__txt" set:html={blog.title2}></div>
-					</div>
-				<span class="wine-list__detail">See more >></span>
-				</a>
-			</li>
-			))
-			}
-		</ul>
-		<!-- wine-list -->
+    <!-- Show more -->
+    <div id="more-wrap" class="mt-14 hidden flex-col items-center gap-3">
+      <span class="h-10 w-px bg-line"></span>
+      <button
+        id="more-btn"
+        type="button"
+        class="font-label inline-flex items-center gap-3 border border-ink px-7 py-3 text-[0.7rem] uppercase tracking-[0.24em] text-ink transition-colors hover:bg-ink hover:text-paper"
+      >
+        もっと見る
+        <span class="opacity-50" data-remaining></span>
+      </button>
+    </div>
+  </section>
 
-		</section>
-		<!-- section1 -->
+  <!-- ============ ABOUT ============ -->
+  <section id="about" class="border-t border-ink bg-paper-deep">
+    <div class="mx-auto max-w-6xl px-5 py-20 md:px-10 md:py-28">
+      <div class="flex items-center gap-5">
+        <p class="eyebrow text-accent">About</p>
+        <span class="h-px flex-1 bg-ink"></span>
+      </div>
 
-		<hr id="about">
+      <div class="mt-10 grid gap-10 md:grid-cols-[240px_1fr] md:gap-16">
+        <!-- Portrait -->
+        <figure class="reveal-img mx-auto w-48 md:mx-0 md:w-full">
+          <img
+            src="/assets/img_profile.png"
+            alt="MAKI KASHU"
+            width="480"
+            height="600"
+            class="h-auto w-full grayscale"
+          />
+          <figcaption class="caption mt-3 flex items-center gap-3">
+            <span class="h-px w-6 bg-ink"></span>
+            Maki Kashu — Osaka
+          </figcaption>
+        </figure>
 
-		<section class="section2">
+        <!-- Bio -->
+        <div>
+          <h2 class="reveal-clip font-display text-[clamp(2.5rem,6vw,4rem)] font-medium leading-[0.95] text-ink">
+            The <span class="italic">Writer</span>
+          </h2>
 
-			<h2 class="ttl1">ABOUT ME</h2>
-			<!-- ttl1 -->
+          <!-- Lead -->
+          <p class="font-serif mt-7 max-w-xl text-[0.95rem] leading-[1.9] text-ink">
+            29歳でワインに興味を持ち始め、お手軽なデイリーワインを買ったり、
+            お店でグラスを傾けたり。少しずつ「美味しい」の解像度が上がっていくのが楽しくて、
+            気づけば日々の一本を記録するようになりました。
+          </p>
+          <p class="font-serif mt-4 max-w-xl text-[0.95rem] leading-[1.9] text-ink/85">
+            飲んだお酒を忘れないように、このジャーナルを綴っています。
+          </p>
 
-			<div class="about">
-				<ul class="about__content">
-					<li class="about__img">
-						<img src="/assets/img_profile.png" alt="" width="100" height="200">
-					</li>
-					<li class="about__desc-box">
-						<p class="about__desc">MAKI KASHU</p>
-						<p class="about__desc">29歳でワインに興味を持ち始め、カルディでお手軽なデイリーワインを買ったりお店でワインを飲んだり...</p>
-						<p class="about__desc">趣味は音楽/バスケ観戦/お笑い/ワイン/クラフトビール/ごはんや巡り!</p>
-						<p class="about__desc">現在は資格取得に向けて緩く勉強中です。飲んだお酒を忘れないようにブログを作成しました。</p>
-					</li>
-				</ul>
-			</div>
-			<!-- about -->
+          <!-- Quick facts -->
+          <dl class="mt-10 max-w-xl border-t border-ink">
+            <div class="flex flex-col gap-1 border-b border-line py-4 sm:flex-row sm:gap-6">
+              <dt class="caption sm:w-28 sm:shrink-0 sm:pt-1">Hobbies</dt>
+              <dd class="font-serif text-ink">
+                音楽 / バスケ観戦 / お笑い / ワイン / クラフトビール / ごはんや巡り
+              </dd>
+            </div>
+            <div class="flex flex-col gap-1 border-b border-line py-4 sm:flex-row sm:gap-6">
+              <dt class="caption sm:w-28 sm:shrink-0 sm:pt-1">Now</dt>
+              <dd class="font-serif text-ink">資格取得に向けて、ゆるく勉強中。</dd>
+            </div>
+            <div class="flex flex-col gap-1 py-4 sm:flex-row sm:gap-6">
+              <dt class="caption sm:w-28 sm:shrink-0 sm:pt-1">Based in</dt>
+              <dd class="font-serif text-ink">Osaka, Japan</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
 
-		</section>
-		<!-- section2 -->
-
-		<hr id="contact">
-
-		<section class="section3">
-
-			<h2 class="ttl1">CONTACT</h2>
-			<!-- ttl1 -->
-
-			<div class="contact">
-				<ul class="contact__content">
-					<li class="contact__img">
-						<img src="/assets/img_contact.png" alt="" width="100" height="200">
-					</li>
-					<li class="contact__desc-box">
-						<span class="contact__ttl">EMAIL</span>
-						<a href="mailto:2018casmakikashu@gmail.com" class="contact__link">2018casmakikashu@gmail.com</a
-					</li>
-				</ul>
-			</div>
-			<!-- contact -->
-
-		</section>
-		<!-- section3 -->
-
-	</main>
-	<!-- main -->
-
-	<footer class="footer">
-		<p class="footer__copyright">＠2025 MAKI KASHU</p>
-
-		<button class="pagetop" aria-label="ページトップに戻る" title="ページトップに戻る">TOP</button>
-		<!-- totop -->
-
-	</footer>
-	<!-- footer -->
-
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="border-t border-ink">
+    <div class="mx-auto flex max-w-7xl flex-col items-center gap-8 px-5 py-24 text-center md:px-10">
+      <p class="eyebrow text-accent">Get in touch</p>
+      <h2 class="reveal-clip font-display text-display font-medium leading-none text-ink">Contact</h2>
+      <p class="font-serif max-w-md text-ink-soft">
+        ワインのおすすめや感想、なんでもお気軽に。
+      </p>
+      <a
+        href="mailto:2018casmakikashu@gmail.com"
+        class="font-display group inline-flex items-baseline gap-2 text-2xl italic text-ink decoration-1 underline-offset-[6px] transition-all hover:underline md:text-4xl"
+      >
+        2018casmakikashu@gmail.com
+        <span class="text-base not-italic transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+  </section>
 </Layout>
 
-<script type="module" src="/scripts/common.js" defer></script>
+<style>
+  .filter-btn {
+    font-family: var(--font-label);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-ink-soft);
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+    transition: all 0.25s var(--ease-editorial);
+    cursor: pointer;
+  }
+  .filter-btn:hover {
+    color: var(--color-ink);
+  }
+  .filter-btn.is-active {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-ink);
+  }
+</style>
+
+<script>
+  const grid = document.getElementById("wine-grid");
+  const cards = Array.from(grid?.querySelectorAll<HTMLElement>(".wine-card") ?? []);
+  const search = document.getElementById("wine-search") as HTMLInputElement | null;
+  const filterBtns = Array.from(
+    document.querySelectorAll<HTMLButtonElement>(".filter-btn"),
+  );
+  const countEl = document.querySelector("[data-count]");
+  const noResults = document.getElementById("no-results");
+  const moreWrap = document.getElementById("more-wrap");
+  const moreBtn = document.getElementById("more-btn");
+  const remainingEl = document.querySelector("[data-remaining]");
+
+  // Progressive reveal: show a first batch, then expand on demand.
+  const INITIAL = 8;
+  const STEP = 8;
+  let limit = INITIAL;
+  let activeType = "all";
+
+  const apply = () => {
+    const q = (search?.value ?? "").trim().toLowerCase();
+
+    // Which cards match the current filter + search.
+    const matches = cards.filter((card) => {
+      const matchType = activeType === "all" || card.dataset.type === activeType;
+      const matchQuery = q === "" || (card.dataset.search ?? "").includes(q);
+      return matchType && matchQuery;
+    });
+
+    // Reveal only up to `limit` of the matches.
+    cards.forEach((card) => card.classList.add("hidden"));
+    matches.slice(0, limit).forEach((card) => card.classList.remove("hidden"));
+
+    if (countEl) countEl.textContent = String(matches.length);
+    noResults?.classList.toggle("hidden", matches.length !== 0);
+
+    const remaining = matches.length - limit;
+    moreWrap?.classList.toggle("hidden", remaining <= 0);
+    moreWrap?.classList.toggle("flex", remaining > 0);
+    if (remainingEl) {
+      remainingEl.textContent = remaining > 0 ? `+${remaining}` : "";
+    }
+  };
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeType = btn.dataset.filter ?? "all";
+      filterBtns.forEach((b) => b.classList.toggle("is-active", b === btn));
+      limit = INITIAL; // reset when changing filter
+      apply();
+    });
+  });
+
+  search?.addEventListener("input", () => {
+    limit = INITIAL; // reset when searching
+    apply();
+  });
+
+  moreBtn?.addEventListener("click", () => {
+    limit += STEP;
+    apply();
+  });
+
+  apply();
+</script>

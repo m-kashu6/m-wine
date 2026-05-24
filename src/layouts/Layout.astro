@@ -1,18 +1,116 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "M-WINE-BLOG — a wine journal",
+  description = "MAKI KASHU が飲んだワインの記録。産地・品種・評価とともに綴るワイン手帖。",
+} = Astro.props;
+---
+
 <!doctype html>
 <html lang="ja">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>M-wine-blog</title>
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Viaoda+Libre&display=swap" rel="stylesheet">
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Jost:wght@300;400;500;600&family=Noto+Serif+JP:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <noscript>
+      <style>
+        .reveal, .reveal-clip, .reveal-img img {
+          opacity: 1 !important;
+          transform: none !important;
+          clip-path: none !important;
+        }
+      </style>
+    </noscript>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <div class="scroll-progress" id="scroll-progress"></div>
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Reveal-on-scroll for any .reveal / .reveal-clip / .reveal-img element.
+      const targets = document.querySelectorAll<HTMLElement>(
+        ".reveal, .reveal-clip, .reveal-img",
+      );
+      if (reduce || !("IntersectionObserver" in window)) {
+        targets.forEach((el) => el.classList.add("in-view"));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("in-view");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+        );
+        targets.forEach((el) => io.observe(el));
+      }
+
+      // Scroll progress bar + parallax (single rAF loop).
+      const bar = document.getElementById("scroll-progress");
+      const parallax = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-pspeed]"),
+      );
+      if (!reduce && (bar || parallax.length)) {
+        let ticking = false;
+        const update = () => {
+          const h = document.documentElement;
+          const st = h.scrollTop;
+
+          if (bar) {
+            const max = h.scrollHeight - h.clientHeight;
+            bar.style.transform = `scaleX(${max > 0 ? st / max : 0})`;
+          }
+
+          parallax.forEach((el) => {
+            const sp = parseFloat(el.dataset.pspeed || "0");
+            el.style.transform = `translate3d(0, ${(st * sp).toFixed(1)}px, 0)`;
+            const fade = el.dataset.pfade ? parseFloat(el.dataset.pfade) : 0;
+            if (fade > 0) {
+              el.style.opacity = String(Math.max(0, 1 - st / fade));
+            }
+          });
+
+          ticking = false;
+        };
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!ticking) {
+              ticking = true;
+              requestAnimationFrame(update);
+            }
+          },
+          { passive: true },
+        );
+        update();
+      }
+    </script>
+  </body>
 </html>
-
-

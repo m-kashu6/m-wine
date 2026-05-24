@@ -1,0 +1,179 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ===========================================================
+   m-wine-blog — NY fashion-magazine (Vogue) editorial
+   Stark black & white, single oxblood accent, Didone headlines,
+   hairline rules, vast whitespace, wide-tracked sans labels.
+   =========================================================== */
+
+@theme {
+  /* Palette — monochrome + one wine-red accent */
+  --color-paper: #ffffff;
+  --color-paper-deep: #f4f2ef;   /* alt section wash */
+  --color-ink: #0c0c0c;          /* near-black */
+  --color-ink-soft: #707070;     /* secondary grey */
+  --color-accent: #8e1b2e;       /* oxblood — used sparingly */
+  --color-line: #e0ddd8;         /* light hairline */
+  --color-line-ink: #0c0c0c;     /* black hairline */
+
+  /* Type families */
+  --font-display: "Bodoni Moda", "Noto Serif JP", Didot, "Times New Roman", serif;
+  --font-serif: "Noto Serif JP", "Bodoni Moda", Georgia, serif;
+  --font-label: "Jost", system-ui, sans-serif;
+
+  /* Display scale — fashion masthead is huge & thin */
+  --text-mega: clamp(4rem, 16vw, 13rem);
+  --text-display: clamp(2.5rem, 7vw, 6rem);
+
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-weight: 300;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  /* Big Didone headlines: high contrast, tight tracking */
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+}
+
+@layer components {
+  /* Wide-tracked sans label — eyebrows, nav, captions, meta keys */
+  .eyebrow {
+    font-family: var(--font-label);
+    text-transform: uppercase;
+    letter-spacing: 0.34em;
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--color-ink);
+  }
+
+  /* Caption: small sans, lighter */
+  .caption {
+    font-family: var(--font-label);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 0.62rem;
+    color: var(--color-ink-soft);
+  }
+
+  /* Full-width black hairline divider */
+  .hairline {
+    height: 1px;
+    background: var(--color-line-ink);
+  }
+
+  /* Centered thin rule with a label sitting on it */
+  .rule-label {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .rule-label::before,
+  .rule-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-line-ink);
+  }
+
+  /* Editorial drop cap — thin Didone */
+  .dropcap > p:first-of-type::first-letter {
+    font-family: var(--font-display);
+    font-weight: 500;
+    float: left;
+    font-size: 5rem;
+    line-height: 0.72;
+    padding: 0.4rem 0.6rem 0 0;
+    color: var(--color-ink);
+  }
+}
+
+@layer utilities {
+  /* ---- Scroll-triggered reveal (toggled by IntersectionObserver) ---- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(3rem) scale(0.965);
+    transition:
+      opacity 1.05s var(--ease-editorial),
+      transform 1.05s var(--ease-editorial);
+    transition-delay: calc(var(--i, 0) * 110ms);
+    will-change: opacity, transform;
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Headline clip reveal — wipes the type in from the top edge */
+  .reveal-clip {
+    clip-path: inset(0 0 110% 0);
+    transform: translateY(0.6em) skewY(2deg);
+    transition:
+      clip-path 1.15s var(--ease-editorial),
+      transform 1.15s var(--ease-editorial);
+    transition-delay: calc(var(--i, 0) * 110ms);
+  }
+  .reveal-clip.in-view {
+    clip-path: inset(0 0 -12% 0);
+    transform: none;
+  }
+
+  /* Soft zoom-in for images as they enter */
+  .reveal-img {
+    clip-path: inset(0 0 0 0);
+    overflow: hidden;
+  }
+  .reveal-img img {
+    transform: scale(1.12);
+    transition: transform 1.4s var(--ease-editorial);
+    transition-delay: calc(var(--i, 0) * 90ms);
+  }
+  .reveal-img.in-view img {
+    transform: scale(1);
+  }
+
+  /* ---- Scroll progress bar ---- */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    background: var(--color-accent);
+    z-index: 60;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-clip,
+    .reveal-img img {
+      opacity: 1 !important;
+      transform: none !important;
+      clip-path: none !important;
+      transition: none !important;
+    }
+    html { scroll-behavior: auto; }
+  }
+}

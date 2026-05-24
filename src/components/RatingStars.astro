@@ -1,0 +1,29 @@
+---
+interface Props {
+  rating?: number;
+  size?: "sm" | "lg";
+  class?: string;
+}
+
+const { rating, size = "sm", class: className = "" } = Astro.props;
+
+const value = typeof rating === "number" ? Math.max(0, Math.min(5, rating)) : null;
+const full = value === null ? 0 : Math.round(value);
+const star = size === "lg" ? "text-base" : "text-xs";
+---
+
+{
+  value !== null && (
+    <span
+      class:list={["inline-flex items-center gap-1 leading-none", star, className]}
+      aria-label={`評価 ${value} / 5`}
+      title={`${value} / 5`}
+    >
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span class={i < full ? "text-accent" : "text-line"}>
+          {i < full ? "★" : "☆"}
+        </span>
+      ))}
+    </span>
+  )
+}

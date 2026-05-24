@@ -1,78 +1,168 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getBlogsDetail, getBlogs } from "../libs/microcms";
+import { getBlogsDetail, getBlogs, wineTypeOf } from "../libs/microcms";
+import RatingStars from "../components/RatingStars.astro";
+import Badge from "../components/Badge.astro";
 
 export async function getStaticPaths() {
-  const response = await getBlogs({ fields: ["id","description"] });
-  return response.contents.map((blog: any) => ({
-    params: {
-      blogId: blog.id,
-    },
+  const response = await getBlogs({ fields: ["id"], limit: 100 });
+  return response.contents.map((blog) => ({
+    params: { blogId: blog.id },
   }));
 }
 
 const { blogId } = Astro.params;
 const blog = await getBlogsDetail(blogId as string);
+
+// Catalogue number — match the order shown on the index page.
+const list = await getBlogs({ fields: ["id"], limit: 100 });
+const idx = list.contents.findIndex((b) => b.id === blogId);
+const num = idx >= 0 ? String(idx + 1).padStart(3, "0") : null;
+
+// Editorial date stamp (YYYY.MM) from the published/created timestamp.
+const stamp = blog.publishedAt ?? blog.createdAt;
+const dateStr = stamp
+  ? `${new Date(stamp).getFullYear()}.${String(new Date(stamp).getMonth() + 1).padStart(2, "0")}`
+  : null;
+
+const type = wineTypeOf(blog);
+
+const meta = [
+  type ? { label: "Type", value: type, kind: "type" as const } : null,
+  typeof blog.rating === "number"
+    ? { label: "Rating", value: blog.rating, kind: "rating" as const }
+    : null,
+  blog.region ? { label: "Region", value: blog.region, kind: "text" as const } : null,
+  blog.grape ? { label: "Grape", value: blog.grape, kind: "text" as const } : null,
+  blog.vintage
+    ? { label: "Vintage", value: String(blog.vintage), kind: "text" as const }
+    : null,
+].filter((x): x is NonNullable<typeof x> => x !== null);
+
+const hasMeta = meta.length > 0;
 ---
 
-<link rel="stylesheet" href="/styles/common.css" />
+<Layout title={`${blog.title} — M's Wine Record`}>
+  <article class="mx-auto max-w-6xl px-5 pt-8 md:px-10 md:pt-12">
+    <!-- Back -->
+    <a
+      href="/#record"
+      class="font-label group inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.24em] text-ink transition-opacity hover:opacity-50"
+    >
+      <span class="transition-transform duration-300 group-hover:-translate-x-1" aria-hidden="true">&larr;</span>
+      Back to Index
+    </a>
 
-<Layout title="Blog Data">
-
-    <header class="header">
-		<h1 class="header__name">
-			<a href="/" class="header__name-link">MAKI KASHU</a>
-		</h1>
-		<nav class="header__nav">
-
-			<ul class="nav-list">
-				<li class="nav-list__item">
-					<a href="/#about" class="nav-list__link">About</a>
-				</li>
-				<li class="nav-list__item">
-					<a href="/#contact" class="nav-list__link">Contact</a>
-				</li>
-			</ul>
-			<!-- nav-list -->
-
-		</nav>
-	</header>
-	<!-- header -->
-
-  <main class="main main--2">
-
-    <section class="section-content1">
-        <div class="section-content1__inner">
-
-            <h2 class="ttl2 ttl2--2">{blog.title}</h2>
-            <!-- ttl2 -->
-
+    <!-- ============ FEATURE OPENER ============ -->
+    <section class="relative mt-6 grid items-start gap-8 md:mt-10 md:grid-cols-2 md:gap-12">
+      <!-- Editorial text column -->
+      <div class="reveal md:pt-10" style="--i:0">
+        <!-- Number · date strip -->
+        <div class="flex items-center gap-4">
+          {num && <span class="font-display text-2xl italic text-accent">N&ordm;&thinsp;{num}</span>}
+          <span class="h-px flex-1 bg-ink"></span>
+          {dateStr && <span class="caption">{dateStr}</span>}
         </div>
 
-        <div class="wine-img wine-img--2">
-            {blog.image?.url && (
-            <img src={blog.image.url} alt={blog.title} />
-            )}
-        </div>
+        <p class="eyebrow mt-7 text-accent">Tasting Note</p>
+        <h1
+          class="reveal-clip font-display mt-3 text-[clamp(2.75rem,7vw,5.5rem)] font-medium leading-[0.92] tracking-[-0.015em] text-ink"
+          style="--i:1"
+        >
+          {blog.title}
+        </h1>
 
-        <div class="section-content1__wrap">
-            <div class="section-content1__desc" set:html={blog.content} />
-            <span class="section-content1__desc-img">
-                <img src="/assets/img_wine.png" alt="" width="170" height="170">
-            </span>
-        </div>
-        <div class="section-content1__desc section-content1__desc--2" set:html={blog.description}></div>
+        <!-- Glance row -->
+        {
+          (type || typeof blog.rating === "number") && (
+            <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
+              {type && <Badge type={type} />}
+              {typeof blog.rating === "number" && <RatingStars rating={blog.rating} size="lg" />}
+            </div>
+          )
+        }
+
+        <!-- Spec list (shows once microCMS fields exist) -->
+        {
+          hasMeta && (
+            <dl class="mt-8 max-w-sm border-t border-ink">
+              {meta.map((m) => (
+                <div class="flex items-baseline justify-between gap-4 border-b border-line py-3">
+                  <dt class="caption shrink-0">{m.label}</dt>
+                  <dd class="text-right font-serif text-base text-ink">
+                    {m.kind === "type" ? (
+                      <Badge type={type} />
+                    ) : m.kind === "rating" ? (
+                      <RatingStars rating={blog.rating} />
+                    ) : (
+                      m.value
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+
+      <!-- Image column -->
+      {
+        blog.image?.url && (
+          <figure class="reveal-img mt-8 md:mt-0" style="--i:2">
+            <img
+              src={`${blog.image.url}?w=1200&fit=clip`}
+              alt={blog.title}
+              width={blog.image.width ?? 1200}
+              height={blog.image.height ?? 1500}
+              class="w-full object-cover"
+            />
+            <figcaption class="caption mt-3 flex items-center gap-3">
+              <span class="h-px w-8 bg-ink"></span>
+              {blog.title}
+            </figcaption>
+          </figure>
+        )
+      }
     </section>
-    <!-- section-content1 -->
 
-  </main>
-  <!-- main -->
+    <!-- ============ ARTICLE BODY ============ -->
+    <div class="mt-16 flex items-center gap-5 md:mt-24">
+      <span class="h-px flex-1 bg-ink"></span>
+      <span class="eyebrow">The Note</span>
+      <span class="h-px flex-1 bg-ink"></span>
+    </div>
 
-    <footer class="footer">
-        <p class="footer__copyright">＠2025 MAKI KASHU</p>
-    </footer>
-    <!-- footer -->
+    <div class="mx-auto mt-12 max-w-2xl">
+      {
+        blog.content && (
+          <div
+            class="prose max-w-none text-[0.92rem] prose-headings:font-display prose-headings:font-medium prose-headings:text-ink prose-headings:mb-4 prose-headings:mt-12 prose-p:font-serif prose-p:my-6 prose-p:leading-[1.9] prose-p:text-ink/90 prose-li:font-serif prose-li:text-ink/90 prose-li:marker:text-accent prose-a:text-accent prose-a:underline-offset-2 prose-strong:font-medium prose-strong:text-ink prose-img:my-8 prose-blockquote:my-8 prose-blockquote:border-l-2 prose-blockquote:border-accent prose-blockquote:pl-6 prose-blockquote:font-display prose-blockquote:text-lg prose-blockquote:not-italic prose-blockquote:text-ink"
+            set:html={blog.content}
+          />
+        )
+      }
 
+      {blog.description && <div class="my-12 hairline" />}
+
+      {
+        blog.description && (
+          <div
+            class="prose max-w-none text-[0.92rem] prose-p:font-serif prose-p:my-6 prose-p:leading-[1.9] prose-p:text-ink/90 prose-a:text-accent prose-strong:font-medium prose-strong:text-ink"
+            set:html={blog.description}
+          />
+        )
+      }
+    </div>
+
+    <!-- Footer of article -->
+    <div class="mx-auto mt-16 max-w-2xl border-t border-ink pt-6">
+      <a
+        href="/#record"
+        class="font-label group inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.24em] text-ink transition-opacity hover:opacity-50"
+      >
+        <span class="transition-transform duration-300 group-hover:-translate-x-1" aria-hidden="true">&larr;</span>
+        Back to all bottles
+      </a>
+    </div>
+  </article>
 </Layout>
-
-<script type="module" src="/scripts/common.js" defer></script>
