@@ -30,10 +30,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image ?? "/assets/kv_img.jpg", Astro.site).toString();
 const siteName = "M's Wine Record";
 
-// Google Search Console 所有権確認トークン（環境変数 / .env で設定）
-const gscVerification = import.meta.env.PUBLIC_GSC_VERIFICATION as
-  | string
-  | undefined;
+// Google Search Console 所有権確認トークン（環境変数優先、なければ既定値）
+const gscVerification =
+  (import.meta.env.PUBLIC_GSC_VERIFICATION as string | undefined) ??
+  "XLMnYNn_7G_2Hr3w_1-eu5alKwKAyS9tUYWXCg1ncnA";
 ---
 
 <!doctype html>
