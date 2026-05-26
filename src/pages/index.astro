@@ -38,6 +38,24 @@ const jsonLd = {
         addressCountry: "JP",
       },
     },
+    {
+      "@type": "CollectionPage",
+      "@id": `${site}/#webpage`,
+      url: `${site}/`,
+      name: pageTitle,
+      isPartOf: { "@id": `${site}/#website` },
+      about: { "@id": `${site}/#person` },
+      mainEntity: {
+        "@type": "ItemList",
+        numberOfItems: blogs.length,
+        itemListElement: blogs.map((b, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          url: `${site}/${b.id}`,
+          name: b.title,
+        })),
+      },
+    },
   ],
 };
 ---

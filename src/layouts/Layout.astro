@@ -10,6 +10,10 @@ interface Props {
   image?: string;
   /** "website" | "article" */
   type?: string;
+  /** OG画像の代替テキスト */
+  imageAlt?: string;
+  /** 記事の公開日時（type="article"のとき） */
+  publishedTime?: string;
 }
 
 const {
@@ -17,12 +21,19 @@ const {
   description = "Maki K. が飲んだワインの記録。産地・品種・評価とともに綴る、大阪発のワイン手帖。",
   image,
   type = "website",
+  imageAlt = "M's Wine Record",
+  publishedTime,
 } = Astro.props;
 
 // 絶対URLを安全に生成（Astro.site は astro.config の site）
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image ?? "/assets/kv_img.jpg", Astro.site).toString();
 const siteName = "M's Wine Record";
+
+// Google Search Console 所有権確認トークン（環境変数 / .env で設定）
+const gscVerification = import.meta.env.PUBLIC_GSC_VERIFICATION as
+  | string
+  | undefined;
 ---
 
 <!doctype html>
@@ -36,7 +47,15 @@ const siteName = "M's Wine Record";
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Maki K." />
+    <meta name="theme-color" content="#ffffff" />
+
+    {
+      gscVerification && (
+        <meta name="google-site-verification" content={gscVerification} />
+      )
+    }
 
     <!-- Open Graph -->
     <meta property="og:type" content={type} />
@@ -45,13 +64,19 @@ const siteName = "M's Wine Record";
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta property="og:locale" content="ja_JP" />
+    {type === "article" && publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
+    {type === "article" && <meta property="article:author" content="Maki K." />}
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={imageAlt} />
 
     <!-- RSS -->
     <link
